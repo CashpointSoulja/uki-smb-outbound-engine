@@ -78,6 +78,7 @@ The video was watched in full before it was published: frames sampled every 2 se
 | V6 | Audio level is sensible with no clipping | Pass: mean −22 dB, peak −4 dB |
 | V7 | File metadata carries no tool names (encoder banner and tags stripped) | Pass |
 | V8 | Drive link opens for anyone with the link and no login | Pass: permission is `anyone / reader`; an anonymous request loads the viewer with no sign-in redirect |
+| V9 | Every voiceover line is present, complete and in the right place | Pass: each of the six narration clips was cross-correlated against the final audio track. All six were found at their planned start (0.9, 13.07, 32.64, 41.01, 60.84, 78.0 s) with similarity 1.000, and the last line ends at 89.0 s, before the fade-out starts at 89.65 s |
 
 ## 5. Not covered (known gaps)
 

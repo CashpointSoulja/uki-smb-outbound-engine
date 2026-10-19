@@ -1,0 +1,16 @@
+{
+  "name": "uki-smb-outbound-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UKI SMB Outbound Engine for Deel: an unofficial concept. Prospect board, sequences, pipeline view and weekly rhythm. Synthetic data only.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Ayo Ahmed",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/unit.test.mjs",
+    "test:e2e": "npm run build && node tests/e2e.mjs",
+    "dev": "npm run build && npx http-server dist -p 8787 -c-1",
+    "deploy": "npm run build && npx wrangler deploy"
+  }
+}

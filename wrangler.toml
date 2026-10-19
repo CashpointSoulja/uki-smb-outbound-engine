@@ -1,4 +1,0 @@
-name = "uki-smb-outbound-engine"
-main = "dist/worker.js"
-compatibility_date = "2025-09-01"
-workers_dev = true

@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UKI SMB Outbound Engine for Deel</title>
+<meta name="description" content="An unofficial concept: named-account prospect board, outbound sequences, pipeline view and weekly operating rhythm for Deel's UK & Ireland SMB team. All data is synthetic.">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&display=swap" rel="stylesheet">
+<style>/* Tokens mirror deel.com's published CSS custom properties (see docs/DESIGN_SHEET.md). */
+:root {
+  --ink: #1b1b1b;
+  --ink-2: #404040;
+  --ink-3: #616161;
+  --line: #e6e6e6;
+  --line-2: #cfcfcf;
+  --surface: #ffffff;
+  --surface-latte: #fffbf4;
+  --surface-latte-2: #faf4ee;
+  --surface-warm: #f7f5f2;
+  --purple-950: #201547;
+  --purple-750: #5938b7;
+  --purple-675: #724ec9;
+  --purple-525: #a98df6;
+  --purple-400: #c4b1f9;
+  --purple-250: #e1d7fb;
+  --purple-25: #faf6ff;
+  --blue-600: #2187cf;
+  --blue-325: #b1d8fc;
+  --blue-175: #dbeeff;
+  --yellow-400: #ffcf25;
+  --yellow-300: #ffe27c;
+  --yellow-200: #ffeba6;
+  --tangelo-600: #cd4311;
+  --green-675: #15740f;
+  --red-600: #f95250;
+  --on-dark: #faf4ee;
+  --on-dark-2: #faf4eebf;
+  --seg-hire: #5938b7;
+  --seg-contract: #2187cf;
+  --seg-expand: #cd4311;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --pill: 200px;
+  --font: "Inter", "Inter Fallback", Arial, Helvetica, sans-serif;
+  --display: "Inter Tight", "Inter", Arial, Helvetica, sans-serif;
+  --shadow: 0 1px 2px rgba(27, 27, 27, .06), 0 8px 24px rgba(27, 27, 27, .06);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--surface-latte); font-size: 15px; line-height: 1.55; letter-spacing: -0.08px; }
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); z-index: 100; }
+.skip:focus { left: 8px; }
+:focus-visible { outline: 2px solid var(--purple-750); outline-offset: 2px; }
+
+/* Top bar */
+.topbar { position: sticky; top: 0; z-index: 20; background: rgba(255, 251, 244, .92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); flex-shrink: 0; }
+.brand-logo svg { display: block; width: 66px; height: auto; }
+.concept-pill { font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; padding: 3px 10px; border-radius: var(--pill); background: var(--yellow-300); color: var(--ink); white-space: nowrap; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a { text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: var(--pill); white-space: nowrap; color: var(--ink-2); transition: background .1s ease-in-out, color .1s ease-in-out; }
+.tabs a:hover { background: var(--surface-latte-2); color: var(--ink); }
+.tabs a[aria-current="page"] { background: var(--ink); color: #fff; }
+
+/* Hero */
+.hero { background: linear-gradient(118deg, #5938b700 48.33%, #5938b7 92.96%), #201547; color: var(--on-dark); }
+.hero-inner { padding-top: 48px; padding-bottom: 48px; }
+.eyebrow { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .24px; text-transform: uppercase; color: var(--purple-400); }
+.hero h1 { font-family: var(--display); font-weight: 500; font-size: clamp(32px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.6px; margin: 0 0 16px; color: #fff; max-width: 860px; text-wrap: balance; }
+.hero h1 em { font-style: normal; color: var(--purple-525); }
+.lede { margin: 0; max-width: 720px; font-size: 17px; color: var(--on-dark-2); }
+body:not([data-tab="prospects"]) .hero-inner { padding-top: 22px; padding-bottom: 22px; }
+body:not([data-tab="prospects"]) .hero h1 { font-size: clamp(24px, 3vw, 32px); margin: 0; }
+body:not([data-tab="prospects"]) .hero .lede, body:not([data-tab="prospects"]) .hero .eyebrow { display: none; }
+
+/* Sample notice */
+.notice { margin: 20px 0 0; padding: 12px 16px; border-radius: var(--radius); background: var(--yellow-200); border: 1px solid var(--yellow-400); font-size: 14px; }
+
+/* Section heads */
+.view { padding: 28px 0 56px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 20px; }
+.section-head h2 { font-family: var(--display); font-weight: 500; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; letter-spacing: -0.4px; margin: 0 0 6px; }
+.section-head p { margin: 0; color: var(--ink-3); max-width: 680px; }
+
+/* Buttons & chips */
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 8px 16px; border-radius: var(--pill); border: none; background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; letter-spacing: .21px; cursor: pointer; transition: background .1s ease-in-out; text-decoration: none; white-space: nowrap; }
+.btn:hover { background: #4e4e4e; }
+.btn.secondary { background: transparent; color: var(--ink); border: 2px solid rgba(27, 27, 27, .16); }
+.btn.secondary:hover { border-color: rgba(27, 27, 27, .4); }
+.btn.small { height: 32px; padding: 6px 12px; font-size: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 6px 14px; border-radius: var(--pill); border: 1px solid var(--line-2); background: var(--surface); font-size: 14px; font-weight: 500; cursor: pointer; }
+.chip:hover { border-color: var(--ink-3); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chip .count { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] .count { color: #ffffffb3; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.seg-HIRE { --seg: var(--seg-hire); }
+.seg-CONTRACT { --seg: var(--seg-contract); }
+.seg-EXPAND { --seg: var(--seg-expand); }
+.dot { background: var(--seg, var(--ink-3)); }
+.seg-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 10px 2px 8px; border-radius: var(--pill); background: var(--surface-latte-2); white-space: nowrap; }
+
+/* Toolbar */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.toolbar .right { display: flex; gap: 8px; flex-wrap: wrap; }
+.field { height: 36px; padding: 6px 14px; border-radius: var(--pill); border: 1px solid var(--line-2); background: var(--surface); font-size: 14px; }
+.field:focus { outline: 2px solid var(--purple-750); outline-offset: 0; border-color: transparent; }
+input.field { width: 220px; }
+
+/* Stat tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.tile .k { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+.tile .v { font-family: var(--display); font-size: 30px; font-weight: 500; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 12px; color: var(--ink-3); }
+
+/* Prospect table */
+.board { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.board table { width: 100%; border-collapse: collapse; }
+.board th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-warm); white-space: nowrap; }
+.board th button { all: unset; cursor: pointer; }
+.board th button:focus-visible { outline: 2px solid var(--purple-750); }
+.board td { padding: 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14px; }
+.board tr:last-child td { border-bottom: none; }
+.board tbody tr { cursor: pointer; transition: background .1s; }
+.board tbody tr:hover { background: var(--purple-25); }
+.co-name { font-weight: 600; }
+.co-meta { font-size: 12px; color: var(--ink-3); }
+.signal { max-width: 300px; }
+.reason { max-width: 340px; color: var(--ink-2); font-size: 13px; }
+.score { display: flex; align-items: center; gap: 10px; min-width: 120px; }
+.score-num { font-family: var(--display); font-weight: 600; font-size: 20px; width: 30px; font-variant-numeric: tabular-nums; }
+.bar { position: relative; height: 8px; flex: 1; border-radius: 4px; background: var(--surface-latte-2); overflow: hidden; }
+.bar > i { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--purple-750); }
+.tier { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: var(--pill); }
+.tier-A { background: var(--purple-250); color: var(--purple-950); }
+.tier-B { background: var(--blue-175); color: #163462; }
+.tier-C { background: #f2f2f2; color: var(--ink-2); }
+.empty { padding: 32px; text-align: center; color: var(--ink-3); }
+.method { margin-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+/* Drawer */
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(27, 27, 27, .35); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100%); background: var(--surface); z-index: 41; overflow-y: auto; padding: 24px; box-shadow: -8px 0 32px rgba(0, 0, 0, .12); }
+.drawer h3 { font-family: var(--display); font-weight: 500; font-size: 28px; line-height: 1.1; margin: 8px 0 4px; }
+.drawer .close { position: absolute; top: 16px; right: 16px; }
+.kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 14px; margin: 16px 0; }
+.kv dt { color: var(--ink-3); }
+.kv dd { margin: 0; }
+.parts { margin: 16px 0; display: grid; gap: 10px; }
+.part { display: grid; grid-template-columns: 150px 1fr 54px; align-items: center; gap: 10px; font-size: 13px; }
+.part .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.callout { background: var(--surface-latte); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; font-size: 14px; }
+
+/* Sequences */
+.seq-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; }
+.panel h3 { font-family: var(--display); font-weight: 500; font-size: 22px; margin: 0 0 8px; line-height: 1.15; }
+.panel h4 { font-size: 12px; font-weight: 600; letter-spacing: .24px; text-transform: uppercase; color: var(--ink-3); margin: 18px 0 6px; }
+.panel p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.seq-side { position: sticky; top: 84px; }
+.toggle { display: inline-flex; padding: 4px; border-radius: var(--pill); background: var(--surface-latte-2); gap: 4px; }
+.toggle button { border: none; background: transparent; padding: 6px 14px; border-radius: var(--pill); font-size: 13px; font-weight: 500; cursor: pointer; }
+.toggle button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.touches { display: grid; gap: 16px; }
+.touch { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.touch-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface-warm); }
+.touch-day { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+.daybadge { display: inline-grid; place-items: center; height: 26px; padding: 0 10px; border-radius: var(--pill); background: var(--ink); color: #fff; font-size: 12px; }
+.touch-subject { padding: 14px 16px 0; font-size: 14px; }
+.touch-subject span { color: var(--ink-3); }
+.touch-body { padding: 10px 16px 18px; white-space: pre-wrap; font-size: 14.5px; line-height: 1.6; }
+mark.fill { background: var(--purple-250); color: var(--purple-950); border-radius: 4px; padding: 0 3px; }
+mark.var { background: var(--yellow-200); color: var(--ink); border-radius: 4px; padding: 0 3px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; }
+.wordcount { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+.picker { width: 100%; margin-top: 6px; border-radius: var(--radius-sm); }
+
+/* Pipeline */
+.pipe-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 16px; }
+.weeks { display: flex; gap: 6px; }
+.weeks button { width: 44px; height: 36px; border-radius: var(--pill); border: 1px solid var(--line-2); background: var(--surface); cursor: pointer; font-weight: 500; font-variant-numeric: tabular-nums; }
+.weeks button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.funnel-wrap { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; margin-bottom: 20px; }
+.funnel { display: grid; gap: 14px; }
+.f-row { display: grid; grid-template-columns: 130px minmax(0, 1fr) 56px; align-items: center; gap: 12px; }
+.f-label { font-size: 14px; font-weight: 500; }
+.f-track { position: relative; height: 34px; border-radius: 0 4px 4px 0; }
+.f-bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--purple-750); transition: width .5s cubic-bezier(.2, .7, .2, 1); min-width: 2px; }
+.f-row:nth-child(1) .f-bar { background: var(--purple-400); }
+.f-row:nth-child(2) .f-bar { background: var(--purple-525); }
+.f-row:nth-child(3) .f-bar { background: var(--purple-675); }
+.f-row:nth-child(4) .f-bar { background: var(--purple-950); }
+.f-track .hit { position: absolute; inset: -4px 0; cursor: default; }
+.f-count { font-family: var(--display); font-size: 22px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.f-conv { grid-column: 2 / 4; font-size: 12px; color: var(--ink-3); margin-top: -8px; }
+.axis-note { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
+.rates { display: grid; gap: 10px; }
+.rate { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rate:last-child { border-bottom: none; }
+.rate b { font-variant-numeric: tabular-nums; }
+.kanban { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.col { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 12px; min-height: 200px; }
+.col h4 { display: flex; justify-content: space-between; margin: 2px 4px 10px; font-size: 13px; font-weight: 600; }
+.col h4 span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.card { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-latte); margin-bottom: 6px; font-size: 13px; line-height: 1.35; animation: pop .35s ease-out; }
+.card .sub { display: block; font-size: 11px; color: var(--ink-3); }
+.card .dot { margin-top: 4px; }
+.card.moved { box-shadow: 0 0 0 2px var(--purple-525); }
+.more { font-size: 12px; color: var(--ink-3); padding: 4px 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+@keyframes pop { from { transform: translateY(4px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Rhythm */
+.week-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.day-head { padding: 12px 14px; background: var(--purple-950); color: #fff; }
+.day-head b { font-family: var(--display); font-size: 20px; font-weight: 500; display: block; }
+.day-head span { font-size: 12px; color: var(--purple-400); font-weight: 500; }
+.block { padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.block:last-child { border-bottom: none; }
+.block time { display: block; font-size: 11px; font-weight: 600; color: var(--purple-750); font-variant-numeric: tabular-nums; }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.inputs { list-style: none; margin: 0; padding: 0; }
+.inputs li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.inputs li:last-child { border-bottom: none; }
+.inputs b { white-space: nowrap; }
+.rules { margin: 0; padding-left: 20px; font-size: 14px; color: var(--ink-2); }
+.rules li { margin-bottom: 8px; }
+.brief { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; white-space: pre-wrap; background: var(--surface-latte); border-radius: var(--radius); padding: 14px; margin-top: 8px; border: 1px solid var(--line); }
+
+/* Tooltip */
+.tooltip { position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: #fff; font-size: 12px; padding: 8px 10px; border-radius: var(--radius-sm); max-width: 260px; line-height: 1.4; }
+
+/* Footer */
+.footer { border-top: 1px solid var(--line); background: var(--surface); }
+.footer-inner { padding: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: baseline; }
+.credit { margin: 0; font-weight: 600; }
+.fine { margin: 0; font-size: 12px; color: var(--ink-3); max-width: 620px; }
+
+/* Responsive */
+@media (max-width: 1000px) {
+  .seq-layout, .funnel-wrap { grid-template-columns: minmax(0, 1fr); }
+  .seq-side { position: static; }
+  .kanban { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .board .col-reason { display: none; }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px; }
+  .topbar-inner { height: auto; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; }
+  .tabs { width: 100%; justify-content: space-between; }
+  .tabs a { padding: 7px 10px; font-size: 13px; }
+  .hero-inner { padding-top: 32px; padding-bottom: 32px; }
+  .two-col, .week-grid, .kanban { grid-template-columns: minmax(0, 1fr); }
+  input.field { width: 100%; }
+  .toolbar .right { width: 100%; }
+  .toolbar .right > * { flex: 1; }
+  .board thead { display: none; }
+  .board table, .board tbody, .board tr, .board td { display: block; width: 100%; }
+  .board tr { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .board td { border: none; padding: 4px 0; }
+  .board .col-reason { display: block; }
+  .signal, .reason { max-width: none; }
+  .f-row { grid-template-columns: 96px minmax(0, 1fr) 40px; }
+  .part { grid-template-columns: 110px 1fr 48px; }
+  .kv { grid-template-columns: 110px 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+@media (forced-colors: active) {
+  .f-bar, .bar > i, .dot { forced-color-adjust: none; }
+}
+.sample-tag { font-family: var(--font); font-size: 11px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase; color: var(--ink-3); background: var(--surface-latte-2); border-radius: var(--pill); padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#prospects" aria-label="UKI SMB Outbound Engine home">
+      <span class="brand-logo"><svg width="78" height="27" viewBox="0 0 78 27" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deel"><path d="M32.9309 26.3952C30.9274 26.3952 29.1412 26.009 27.5722 25.2366C26.0032 24.4642 24.7601 23.3417 23.8428 21.8693C22.9497 20.3727 22.5031 18.5986 22.5031 16.5468C22.5031 14.3985 22.9376 12.5036 23.8066 10.8622C24.6756 9.22083 25.8825 7.95357 27.4274 7.06045C28.9963 6.1432 30.7946 5.68457 32.8223 5.68457C34.9223 5.68457 36.6844 6.1432 38.1086 7.06045C39.5327 7.95357 40.5948 9.24497 41.2948 10.9347C42.019 12.6243 42.369 14.6278 42.3448 16.9451H24.4945V13.5778H39.5568L37.4206 15.1709C37.4206 13.9881 37.2516 12.9502 36.9137 12.0571C36.5999 11.164 36.093 10.4519 35.393 9.92084C34.7171 9.3898 33.8602 9.12428 32.8223 9.12428C31.7602 9.12428 30.8308 9.41394 30.0343 9.99326C29.2377 10.5726 28.6222 11.4174 28.1877 12.5278C27.7532 13.6381 27.536 14.9416 27.536 16.4382C27.536 17.7658 27.7653 18.9124 28.2239 19.8779C28.7067 20.8434 29.3584 21.5796 30.1791 22.0865C31.024 22.5693 31.9533 22.8107 32.9671 22.8107C34.3671 22.8107 35.5258 22.4366 36.443 21.6883C37.3844 20.9158 38.0723 19.9503 38.5068 18.7917L42.5983 21.2538C41.4396 22.9917 40.0275 24.2831 38.362 25.128C36.7206 25.9728 34.9102 26.3952 32.9309 26.3952Z" fill="currentColor"/><path d="M54.2042 26.3952C52.2007 26.3952 50.4145 26.009 48.8455 25.2366C47.2765 24.4642 46.0334 23.3417 45.1161 21.8693C44.223 20.3727 43.7764 18.5986 43.7764 16.5468C43.7764 14.3985 44.2109 12.5036 45.0799 10.8622C45.9489 9.22083 47.1558 7.95357 48.7006 7.06045C50.2696 6.1432 52.0679 5.68457 54.0956 5.68457C56.1956 5.68457 57.9577 6.1432 59.3818 7.06045C60.806 7.95357 61.8681 9.24497 62.5681 10.9347C63.2922 12.6243 63.6423 14.6278 63.6181 16.9451H45.7678V13.5778H60.8301L58.6939 15.1709C58.6939 13.9881 58.5249 12.9502 58.187 12.0571C57.8732 11.164 57.3663 10.4519 56.6663 9.92084C55.9904 9.3898 55.1335 9.12428 54.0956 9.12428C53.0335 9.12428 52.1041 9.41394 51.3076 9.99326C50.511 10.5726 49.8955 11.4174 49.461 12.5278C49.0265 13.6381 48.8093 14.9416 48.8093 16.4382C48.8093 17.7658 49.0386 18.9124 49.4972 19.8779C49.98 20.8434 50.6317 21.5796 51.4524 22.0865C52.2972 22.5693 53.2266 22.8107 54.2404 22.8107C55.6404 22.8107 56.799 22.4366 57.7163 21.6883C58.6577 20.9158 59.3456 19.9503 59.7801 18.7917L63.8716 21.2538C62.7129 22.9917 61.3008 24.2831 59.6353 25.128C57.9939 25.9728 56.1835 26.3952 54.2042 26.3952Z" fill="currentColor"/><path d="M65.2308 0H70.0826V21.1814C70.0826 22.8952 70.167 24.4642 70.336 25.8883H65.2308V0Z" fill="currentColor"/><path d="M0 16.0536C0 8.88282 4.57742 5.69628 9.59667 5.69628C14.1776 5.69628 16.1093 8.60687 16.1093 8.60687V0.00960845H21.0708V21.1967C21.0708 22.9359 21.1306 24.5052 21.252 25.9046H16.1109V23.5265C16.1109 23.5265 14.1423 26.411 9.59829 26.411C4.75405 26.411 0 23.6312 0 16.0536ZM10.8639 22.604C14.3778 22.604 16.6497 19.9295 16.6497 16.0536C16.6497 12.0422 14.3762 9.5032 10.8639 9.5032C7.35158 9.5032 5.16209 11.9168 5.16209 16.0536C5.16209 20.1904 7.4438 22.604 10.8639 22.604Z" fill="currentColor"/><path d="M73.2188 21.2539H77.9981V25.8885H73.2188V21.2539Z" fill="currentColor"/></svg></span>
+      <span class="concept-pill">Unofficial concept</span>
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#prospects" data-tab="prospects">Prospects</a>
+      <a href="#sequences" data-tab="sequences">Sequences</a>
+      <a href="#pipeline" data-tab="pipeline">Pipeline</a>
+      <a href="#rhythm" data-tab="rhythm">Weekly rhythm</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">UK &amp; Ireland · SMB · Outbound</p>
+    <h1>UKI SMB Outbound Engine <em>for Deel</em></h1>
+    <p class="lede">The top-of-funnel machine I'd run from day one: 40 named accounts scored on why they need Deel now, three sequences that earn a meeting instead of pitching, a funnel you can watch fill, and the weekly rhythm that keeps it running.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="notice" role="note" id="sample-notice">
+    <strong>Sample data.</strong> Every company, contact, signal and number on this page is synthetic. I made them up to show how the engine works. None of it is a real account or a real result.
+  </div>
+</div>
+
+<main id="main" class="wrap">
+  <section id="view-prospects" class="view" data-view="prospects" aria-labelledby="h-prospects"></section>
+  <section id="view-sequences" class="view" data-view="sequences" aria-labelledby="h-sequences" hidden></section>
+  <section id="view-pipeline" class="view" data-view="pipeline" aria-labelledby="h-pipeline" hidden></section>
+  <section id="view-rhythm" class="view" data-view="rhythm" aria-labelledby="h-rhythm" hidden></section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <p class="credit">Ayo Ahmed, independent concept</p>
+    <p class="fine">Not affiliated with or endorsed by Deel. The Deel name and logo belong to their owner and appear here only to show the concept in context.</p>
+  </div>
+</footer>
+
+<div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+<aside class="drawer" id="drawer" aria-modal="true" role="dialog" aria-labelledby="drawer-title" hidden></aside>
+<div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+
+<script>(() => {
+"use strict";
+// UKI SMB Outbound Engine — data model.
+// Every company, person and number in this file is SYNTHETIC sample data.
+// Nothing here describes a real business or a real outcome.
+
+const SEGMENTS = {
+  HIRE: {
+    key: "HIRE",
+    label: "Hiring abroad",
+    short: "Hiring abroad",
+    colour: "#5938B7",
+    wedge: "Employer of Record for the first hire in a country with no entity",
+    why: "A first hire outside the UK or Ireland forces a decision: set up an entity, misuse a contractor agreement, or employ through an EOR. That decision has a deadline (the offer date), so the timing is real.",
+  },
+  CONTRACT: {
+    key: "CONTRACT",
+    label: "Contractor-heavy",
+    short: "Contractors",
+    colour: "#2187CF",
+    wedge: "Contractor management, compliant contracts and one-run payments",
+    why: "Teams paying several overseas contractors by bank transfer feel it every month-end: invoice chasing, FX fees, and a growing worry that long-running contractors look like employees.",
+  },
+  EXPAND: {
+    key: "EXPAND",
+    label: "International expansion",
+    short: "Expansion",
+    colour: "#CD4311",
+    wedge: "EOR to test a market before an entity, then global payroll once it sticks",
+    why: "Opening a new market means people on the ground before the legal set-up is finished. Expansion plans are public (press, job ads, new-office posts), so the trigger is easy to spot and time.",
+  },
+};
+
+// fundingMonths: months since last announced round (null = none public).
+// noEntity: true when the signal points to people in a country where the company has no entity.
+const ACCOUNTS = [
+  // ---- Hiring abroad (14) ----
+  { id: "a01", name: "Brightwake Analytics", city: "Manchester", country: "UK", sector: "B2B SaaS (retail analytics)", staff: 64, segment: "HIRE", signal: "Job ad for a Senior Data Engineer, remote in Portugal", detail: "posted 9 days ago, first role outside the UK", signalAgeDays: 9, abroadCountries: ["Portugal"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 5, noEntity: true, contact: { first: "Hannah", role: "Head of People" }, roleAbroad: "Senior Data Engineer", countryAbroad: "Portugal" },
+  { id: "a02", name: "Tidemark Health", city: "Dublin", country: "IE", sector: "Digital health", staff: 48, segment: "HIRE", signal: "Three clinical-ops roles advertised in Poland", detail: "all three posted in the last fortnight", signalAgeDays: 12, abroadCountries: ["Poland"], openRolesAbroad: 3, contractorsAbroad: 1, fundingMonths: 7, noEntity: true, contact: { first: "Ciarán", role: "COO" }, roleAbroad: "Clinical Operations Lead", countryAbroad: "Poland" },
+  { id: "a03", name: "Kestrel Ledger", city: "Edinburgh", country: "UK", sector: "Fintech (SME lending)", staff: 112, segment: "HIRE", signal: "Hiring a Compliance Analyst in Lithuania", detail: "listed alongside two UK compliance roles", signalAgeDays: 21, abroadCountries: ["Lithuania"], openRolesAbroad: 1, contractorsAbroad: 2, fundingMonths: 11, noEntity: true, contact: { first: "Morag", role: "Head of People Operations" }, roleAbroad: "Compliance Analyst", countryAbroad: "Lithuania" },
+  { id: "a04", name: "Pollen & Pine Studio", city: "Bristol", country: "UK", sector: "Games studio", staff: 37, segment: "HIRE", signal: "Hiring a Technical Artist in Spain", detail: "careers page says 'remote, Spain-based'", signalAgeDays: 6, abroadCountries: ["Spain"], openRolesAbroad: 1, contractorsAbroad: 3, fundingMonths: null, noEntity: true, contact: { first: "Owen", role: "Co-founder & Studio Director" }, roleAbroad: "Technical Artist", countryAbroad: "Spain" },
+  { id: "a05", name: "Corrib Robotics", city: "Galway", country: "IE", sector: "Industrial automation", staff: 83, segment: "HIRE", signal: "Field Service Engineer role based in Germany", detail: "to support a new customer site near Stuttgart", signalAgeDays: 17, abroadCountries: ["Germany"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: 9, noEntity: true, contact: { first: "Aoife", role: "HR Manager" }, roleAbroad: "Field Service Engineer", countryAbroad: "Germany" },
+  { id: "a06", name: "Quayside Learning", city: "Newcastle", country: "UK", sector: "EdTech", staff: 29, segment: "HIRE", signal: "Curriculum Designer role open to candidates in South Africa", detail: "first hire outside the UK", signalAgeDays: 25, abroadCountries: ["South Africa"], openRolesAbroad: 1, contractorsAbroad: 1, fundingMonths: 14, noEntity: true, contact: { first: "Priya", role: "CEO" }, roleAbroad: "Curriculum Designer", countryAbroad: "South Africa" },
+  { id: "a07", name: "Halyard Security", city: "Belfast", country: "UK", sector: "Cybersecurity", staff: 96, segment: "HIRE", signal: "Two SOC Analyst roles in Romania", detail: "to cover overnight UK hours", signalAgeDays: 11, abroadCountries: ["Romania"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: 4, noEntity: true, contact: { first: "Declan", role: "VP Operations" }, roleAbroad: "SOC Analyst", countryAbroad: "Romania" },
+  { id: "a08", name: "Fernhill Foods Online", city: "Leeds", country: "UK", sector: "D2C e-commerce", staff: 71, segment: "HIRE", signal: "Customer Support Lead role in the Philippines", detail: "listed as 'Manila, full-time employee'", signalAgeDays: 34, abroadCountries: ["Philippines"], openRolesAbroad: 1, contractorsAbroad: 4, fundingMonths: null, noEntity: true, contact: { first: "Gemma", role: "Head of Operations" }, roleAbroad: "Customer Support Lead", countryAbroad: "the Philippines" },
+  { id: "a09", name: "Marlowe Legal Tech", city: "London", country: "UK", sector: "LegalTech", staff: 54, segment: "HIRE", signal: "Hiring a Product Designer in the Netherlands", detail: "posted by the Head of Product on LinkedIn", signalAgeDays: 8, abroadCountries: ["Netherlands"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 3, noEntity: true, contact: { first: "Tom", role: "Head of Talent" }, roleAbroad: "Product Designer", countryAbroad: "the Netherlands" },
+  { id: "a10", name: "Slaney Bio", city: "Cork", country: "IE", sector: "Biotech services", staff: 142, segment: "HIRE", signal: "Regulatory Affairs Manager role in France", detail: "ahead of an EU submission", signalAgeDays: 46, abroadCountries: ["France"], openRolesAbroad: 1, contractorsAbroad: 1, fundingMonths: 18, noEntity: true, contact: { first: "Niamh", role: "Head of HR" }, roleAbroad: "Regulatory Affairs Manager", countryAbroad: "France" },
+  { id: "a11", name: "Larkspur Payments", city: "Cardiff", country: "UK", sector: "Fintech (payments)", staff: 58, segment: "HIRE", signal: "Backend Engineer role open in Canada", detail: "to overlap with a new North American partner", signalAgeDays: 19, abroadCountries: ["Canada"], openRolesAbroad: 1, contractorsAbroad: 1, fundingMonths: 6, noEntity: true, contact: { first: "Rhys", role: "CTO" }, roleAbroad: "Backend Engineer", countryAbroad: "Canada" },
+  { id: "a12", name: "Ashgrove Recruitment Tech", city: "Birmingham", country: "UK", sector: "HR tech", staff: 22, segment: "HIRE", signal: "Sales Development role in Ireland advertised", detail: "first person outside the UK", signalAgeDays: 58, abroadCountries: ["Ireland"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: null, noEntity: true, contact: { first: "Sam", role: "Founder" }, roleAbroad: "Sales Development Rep", countryAbroad: "Ireland" },
+  { id: "a13", name: "Northlight Media Group", city: "Glasgow", country: "UK", sector: "Digital publishing", staff: 168, segment: "HIRE", signal: "Video Editor roles in India", detail: "two roles posted on the careers page", signalAgeDays: 72, abroadCountries: ["India"], openRolesAbroad: 2, contractorsAbroad: 6, fundingMonths: null, noEntity: true, contact: { first: "Fiona", role: "People Director" }, roleAbroad: "Video Editor", countryAbroad: "India" },
+  { id: "a14", name: "Bramble Mobility", city: "Cambridge", country: "UK", sector: "Mobility software", staff: 15, segment: "HIRE", signal: "Embedded Engineer role open in Sweden", detail: "founder posted it in a hiring thread", signalAgeDays: 27, abroadCountries: ["Sweden"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 2, noEntity: true, contact: { first: "Ella", role: "Co-founder & CEO" }, roleAbroad: "Embedded Engineer", countryAbroad: "Sweden" },
+
+  // ---- Contractor-heavy (13) ----
+  { id: "a15", name: "Saltmarsh Digital", city: "Brighton", country: "UK", sector: "Web & product agency", staff: 41, segment: "CONTRACT", signal: "Team page lists 11 freelancers across 6 countries", detail: "developers in Ukraine, Brazil and Vietnam", signalAgeDays: 14, abroadCountries: ["Ukraine", "Brazil", "Vietnam", "Poland", "Serbia", "Argentina"], openRolesAbroad: 0, contractorsAbroad: 11, fundingMonths: null, noEntity: false, contact: { first: "Lewis", role: "Managing Director" }, contractorCount: 11, contractorCountries: 6 },
+  { id: "a16", name: "Inishfree Translations", city: "Limerick", country: "IE", sector: "Localisation services", staff: 34, segment: "CONTRACT", signal: "Recruiting freelance linguists in 9 languages", detail: "ongoing contractor pool, paid per project", signalAgeDays: 10, abroadCountries: ["Spain", "Italy", "Germany", "Japan", "Brazil", "Mexico", "Poland", "Turkey", "Korea"], openRolesAbroad: 0, contractorsAbroad: 40, fundingMonths: null, noEntity: false, contact: { first: "Sinéad", role: "Finance Manager" }, contractorCount: 40, contractorCountries: 9 },
+  { id: "a17", name: "Copperleaf Studios", city: "London", country: "UK", sector: "Animation studio", staff: 58, segment: "CONTRACT", signal: "Credits list 23 remote animators on the last project", detail: "most based outside the UK", signalAgeDays: 31, abroadCountries: ["Canada", "France", "India", "Philippines", "Spain"], openRolesAbroad: 0, contractorsAbroad: 23, fundingMonths: 8, noEntity: false, contact: { first: "Maya", role: "Head of Production" }, contractorCount: 23, contractorCountries: 5 },
+  { id: "a18", name: "Wrenfield Software", city: "Sheffield", country: "UK", sector: "Vertical SaaS (construction)", staff: 76, segment: "CONTRACT", signal: "Engineering blog thanks 'our contractor team in Egypt and Pakistan'", detail: "8 named engineers, all long-running", signalAgeDays: 22, abroadCountries: ["Egypt", "Pakistan"], openRolesAbroad: 0, contractorsAbroad: 8, fundingMonths: 10, noEntity: false, contact: { first: "Chris", role: "CFO" }, contractorCount: 8, contractorCountries: 2 },
+  { id: "a19", name: "Glenmore Outdoor", city: "Aberdeen", country: "UK", sector: "Outdoor retail (D2C)", staff: 47, segment: "CONTRACT", signal: "Overseas content creators and a contractor e-com team", detail: "7 contractors listed on LinkedIn", signalAgeDays: 40, abroadCountries: ["Norway", "Canada", "Philippines"], openRolesAbroad: 0, contractorsAbroad: 7, fundingMonths: null, noEntity: false, contact: { first: "Callum", role: "Operations Director" }, contractorCount: 7, contractorCountries: 3 },
+  { id: "a20", name: "Beacon Street Research", city: "Oxford", country: "UK", sector: "Market research", staff: 26, segment: "CONTRACT", signal: "Advertising for freelance field researchers in 5 markets", detail: "rolling call on their site", signalAgeDays: 16, abroadCountries: ["Kenya", "Nigeria", "Ghana", "South Africa", "Egypt"], openRolesAbroad: 0, contractorsAbroad: 15, fundingMonths: null, noEntity: false, contact: { first: "Abi", role: "Operations Manager" }, contractorCount: 15, contractorCountries: 5 },
+  { id: "a21", name: "Lagan Labs", city: "Belfast", country: "UK", sector: "Software consultancy", staff: 63, segment: "CONTRACT", signal: "Case study mentions a nearshore contractor squad", detail: "14 developers in Portugal and Romania", signalAgeDays: 29, abroadCountries: ["Portugal", "Romania"], openRolesAbroad: 0, contractorsAbroad: 14, fundingMonths: null, noEntity: false, contact: { first: "Gareth", role: "Finance Director" }, contractorCount: 14, contractorCountries: 2 },
+  { id: "a22", name: "Hollybush Design Co.", city: "Nottingham", country: "UK", sector: "Brand & packaging design", staff: 18, segment: "CONTRACT", signal: "Freelance illustrators in 4 countries on the studio page", detail: "6 regular contributors", signalAgeDays: 55, abroadCountries: ["Italy", "Mexico", "Indonesia", "Argentina"], openRolesAbroad: 0, contractorsAbroad: 6, fundingMonths: null, noEntity: false, contact: { first: "Lucy", role: "Studio Owner" }, contractorCount: 6, contractorCountries: 4 },
+  { id: "a23", name: "Shannonside Data", city: "Limerick", country: "IE", sector: "Data labelling services", staff: 39, segment: "CONTRACT", signal: "Hiring contract annotators in Kenya and India", detail: "batch of 20 contractors", signalAgeDays: 7, abroadCountries: ["Kenya", "India"], openRolesAbroad: 0, contractorsAbroad: 20, fundingMonths: 4, noEntity: false, contact: { first: "Eoin", role: "Head of Operations" }, contractorCount: 20, contractorCountries: 2 },
+  { id: "a24", name: "Redkite Marketing", city: "Reading", country: "UK", sector: "Performance marketing agency", staff: 52, segment: "CONTRACT", signal: "Offshore paid-media team of contractors in South Africa", detail: "mentioned on the agency's 'how we work' page", signalAgeDays: 37, abroadCountries: ["South Africa", "Philippines"], openRolesAbroad: 0, contractorsAbroad: 9, fundingMonths: null, noEntity: false, contact: { first: "Jess", role: "COO" }, contractorCount: 9, contractorCountries: 2 },
+  { id: "a25", name: "Tamar Ventures Studio", city: "Plymouth", country: "UK", sector: "Venture studio", staff: 12, segment: "CONTRACT", signal: "Portfolio builds staffed by freelancers in 3 countries", detail: "5 contractors on current builds", signalAgeDays: 63, abroadCountries: ["Poland", "Ukraine", "Spain"], openRolesAbroad: 0, contractorsAbroad: 5, fundingMonths: 13, noEntity: false, contact: { first: "Ben", role: "Studio Partner" }, contractorCount: 5, contractorCountries: 3 },
+  { id: "a26", name: "Westport Games", city: "Galway", country: "IE", sector: "Mobile games", staff: 44, segment: "CONTRACT", signal: "Contract QA testers in Brazil and Vietnam", detail: "12 testers on rolling contracts", signalAgeDays: 20, abroadCountries: ["Brazil", "Vietnam"], openRolesAbroad: 0, contractorsAbroad: 12, fundingMonths: 9, noEntity: false, contact: { first: "Róisín", role: "Producer & Ops Lead" }, contractorCount: 12, contractorCountries: 2 },
+  { id: "a27", name: "Ironbridge Engineering Services", city: "Birmingham", country: "UK", sector: "Engineering consultancy", staff: 188, segment: "CONTRACT", signal: "Project contractors on sites in the UAE and Saudi Arabia", detail: "per a recent project announcement", signalAgeDays: 49, abroadCountries: ["UAE", "Saudi Arabia"], openRolesAbroad: 0, contractorsAbroad: 10, fundingMonths: null, noEntity: false, contact: { first: "Anil", role: "HR Business Partner" }, contractorCount: 10, contractorCountries: 2 },
+
+  // ---- International expansion (13) ----
+  { id: "a28", name: "Harbourline Logistics Tech", city: "Liverpool", country: "UK", sector: "Logistics SaaS", staff: 87, segment: "EXPAND", signal: "Announced a Netherlands launch with a Rotterdam pilot customer", detail: "press release last week", signalAgeDays: 7, abroadCountries: ["Netherlands"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: 3, noEntity: true, contact: { first: "Natalie", role: "COO" }, market: "the Netherlands", marketCity: "Rotterdam" },
+  { id: "a29", name: "Clover Pay", city: "Dublin", country: "IE", sector: "Fintech (embedded payments)", staff: 74, segment: "EXPAND", signal: "Series A announcement names Germany and Spain as next markets", detail: "€12m round, 'expanding into DACH and Iberia'", signalAgeDays: 13, abroadCountries: ["Germany", "Spain"], openRolesAbroad: 3, contractorsAbroad: 1, fundingMonths: 1, noEntity: true, contact: { first: "Rory", role: "Head of People" }, market: "Germany and Spain", marketCity: "Berlin" },
+  { id: "a30", name: "Thistle Energy Systems", city: "Glasgow", country: "UK", sector: "Clean-tech (battery software)", staff: 103, segment: "EXPAND", signal: "Opening a US sales presence after a Texas utility deal", detail: "CEO interview in trade press", signalAgeDays: 18, abroadCountries: ["United States"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: 6, noEntity: true, contact: { first: "Iain", role: "CFO" }, market: "the US", marketCity: "Austin" },
+  { id: "a31", name: "Pebblebrook Pet Care", city: "Bristol", country: "UK", sector: "Pet health D2C", staff: 46, segment: "EXPAND", signal: "Launching in Ireland and France", detail: "new country sites live, local roles advertised", signalAgeDays: 24, abroadCountries: ["Ireland", "France"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: 8, noEntity: true, contact: { first: "Zoe", role: "Head of People & Culture" }, market: "France", marketCity: "Paris" },
+  { id: "a32", name: "Ardmore Clinical", city: "Cork", country: "IE", sector: "Clinical trials tech", staff: 61, segment: "EXPAND", signal: "Hiring a Country Lead for the Nordics", detail: "first Nordic customer signed", signalAgeDays: 15, abroadCountries: ["Denmark", "Sweden"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 12, noEntity: true, contact: { first: "Brendan", role: "VP Commercial" }, market: "the Nordics", marketCity: "Copenhagen" },
+  { id: "a33", name: "Foxglove Interiors", city: "Manchester", country: "UK", sector: "Furniture e-commerce", staff: 92, segment: "EXPAND", signal: "Opening an EU fulfilment hub in Belgium", detail: "post-Brexit shipping costs cited", signalAgeDays: 39, abroadCountries: ["Belgium"], openRolesAbroad: 4, contractorsAbroad: 0, fundingMonths: null, noEntity: true, contact: { first: "Kate", role: "Operations Director" }, market: "Belgium", marketCity: "Antwerp" },
+  { id: "a34", name: "Signalbox Telematics", city: "Derby", country: "UK", sector: "Rail telematics", staff: 134, segment: "EXPAND", signal: "Won an Australian rail contract; hiring locally", detail: "two engineering roles in Sydney", signalAgeDays: 28, abroadCountries: ["Australia"], openRolesAbroad: 2, contractorsAbroad: 0, fundingMonths: null, noEntity: true, contact: { first: "Martin", role: "Finance Director" }, market: "Australia", marketCity: "Sydney" },
+  { id: "a35", name: "Lumen Lane Lighting", city: "Leeds", country: "UK", sector: "Smart lighting hardware", staff: 33, segment: "EXPAND", signal: "Distributor deal in the UAE; first sales hire planned", detail: "LinkedIn post from the founder", signalAgeDays: 44, abroadCountries: ["UAE"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 15, noEntity: true, contact: { first: "Adam", role: "Founder" }, market: "the UAE", marketCity: "Dubai" },
+  { id: "a36", name: "Kinsale Wealth Software", city: "Dublin", country: "IE", sector: "WealthTech", staff: 57, segment: "EXPAND", signal: "Partner hire in Luxembourg to support a fund-admin client", detail: "job ad mentions 'first EU hub outside Ireland'", signalAgeDays: 10, abroadCountries: ["Luxembourg"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: 7, noEntity: true, contact: { first: "Orla", role: "Head of Finance" }, market: "Luxembourg", marketCity: "Luxembourg City" },
+  { id: "a37", name: "Moorland Coffee Roasters", city: "York", country: "UK", sector: "Specialty coffee (D2C & wholesale)", staff: 24, segment: "EXPAND", signal: "Opening a wholesale arm in Germany", detail: "German-language site launched", signalAgeDays: 66, abroadCountries: ["Germany"], openRolesAbroad: 1, contractorsAbroad: 0, fundingMonths: null, noEntity: true, contact: { first: "Laura", role: "Co-owner" }, market: "Germany", marketCity: "Hamburg" },
+  { id: "a38", name: "Gullwing Aerial", city: "Southampton", country: "UK", sector: "Drone inspection services", staff: 68, segment: "EXPAND", signal: "Expanding inspection crews into Norway's offshore wind sector", detail: "framework contract announced", signalAgeDays: 21, abroadCountries: ["Norway"], openRolesAbroad: 3, contractorsAbroad: 2, fundingMonths: 5, noEntity: true, contact: { first: "Joe", role: "Head of Operations" }, market: "Norway", marketCity: "Stavanger" },
+  { id: "a39", name: "Wicklow Biologics Software", city: "Dublin", country: "IE", sector: "Lab software", staff: 118, segment: "EXPAND", signal: "Opening a Boston office for US customers", detail: "VP Sales hired in Boston", signalAgeDays: 33, abroadCountries: ["United States"], openRolesAbroad: 3, contractorsAbroad: 0, fundingMonths: 9, noEntity: true, contact: { first: "Seán", role: "CFO" }, market: "the US", marketCity: "Boston" },
+  { id: "a40", name: "Pennant Travel Tech", city: "Edinburgh", country: "UK", sector: "Travel booking SaaS", staff: 197, segment: "EXPAND", signal: "Entering Italy via a new tour-operator partnership", detail: "Italian partnerships manager role advertised", signalAgeDays: 81, abroadCountries: ["Italy"], openRolesAbroad: 1, contractorsAbroad: 3, fundingMonths: null, noEntity: true, contact: { first: "Alasdair", role: "VP People" }, market: "Italy", marketCity: "Milan" },
+];
+
+// ---- Fit score (deterministic, 0–100) ----
+// Five components, each explainable in one line. Weights sum to 100.
+const SCORE_WEIGHTS = { headcount: 20, recency: 25, footprint: 30, timing: 15, entity: 10 };
+
+function scoreAccount(a) {
+  const headcount = a.staff >= 25 && a.staff <= 150 ? 20 : a.staff >= 15 && a.staff <= 200 ? 14 : 8;
+  const recency = a.signalAgeDays <= 14 ? 25 : a.signalAgeDays <= 30 ? 20 : a.signalAgeDays <= 60 ? 13 : 6;
+  const countryPts = Math.min(18, a.abroadCountries.length * 6);
+  const peoplePts = Math.min(12, a.openRolesAbroad * 3 + Math.ceil(a.contractorsAbroad / 2));
+  const footprint = countryPts + peoplePts;
+  const timing = a.fundingMonths == null ? 4 : a.fundingMonths <= 6 ? 15 : a.fundingMonths <= 12 ? 9 : 4;
+  const entity = a.noEntity ? 10 : a.contractorsAbroad >= 8 ? 8 : 5;
+  const parts = { headcount, recency, footprint, timing, entity };
+  const total = headcount + recency + footprint + timing + entity;
+  return { total, parts };
+}
+
+function tierFor(score) {
+  return score >= 75 ? "A" : score >= 60 ? "B" : "C";
+}
+
+const withArticle = (w) => `${/^[AEIOU]/i.test(w) ? "an" : "a"} ${w}`;
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// Reason = the segment's core trigger, the next strongest supporting fact, and the biggest drag.
+// Every phrase is built from the account's own fields, so it can never contradict the data.
+function reasonFor(a, scored = scoreAccount(a)) {
+  const core = {
+    HIRE: `Hiring ${withArticle(a.roleAbroad)} in ${a.countryAbroad}, with no local entity there`,
+    CONTRACT: `${plural(a.contractorsAbroad, "contractor", "contractors")} across ${plural(a.abroadCountries.length, "country", "countries")}, likely paid invoice by invoice`,
+    EXPAND: `Launching in ${a.market} before a local entity exists`,
+  }[a.segment];
+
+  const p = scored.parts;
+  const support = [];
+  if (p.recency === 25) support.push([4, `signal is only ${a.signalAgeDays} days old`]);
+  if (p.timing === 15) support.push([3, `raised ${plural(a.fundingMonths, "month", "months")} ago, so budget and urgency line up`]);
+  if (a.segment !== "CONTRACT" && a.openRolesAbroad >= 2) support.push([2, `${a.openRolesAbroad} roles open abroad, not just one`]);
+  if (p.headcount === 20) support.push([1, `${a.staff} staff sits in the 25–150 sweet spot`]);
+  if (p.recency === 20) support.push([0, `signal is ${a.signalAgeDays} days old`]);
+  support.sort((x, y) => y[0] - x[0]);
+
+  let watch;
+  if (a.staff < 25) watch = `small team (${a.staff}), so budget may be tight`;
+  else if (a.staff > 150) watch = `${a.staff} staff, so there may be an existing process to displace`;
+  else if (a.signalAgeDays > 30) watch = `signal is ${a.signalAgeDays} days old, so open with a softer question`;
+  else if (a.segment !== "CONTRACT" && a.openRolesAbroad + a.contractorsAbroad <= 1) watch = "only one person abroad so far, so the deal starts small";
+  else if (a.fundingMonths == null) watch = "no recent funding news";
+  else if (p.timing < 15) watch = `last raise was ${plural(a.fundingMonths, "month", "months")} ago`;
+  else watch = "nothing obvious; qualify the decision-maker early";
+
+  return `${core}${support.length ? `; ${support[0][1]}` : ""}. Watch: ${watch}.`;
+}
+
+function enrichedAccounts() {
+  return ACCOUNTS.map((a) => {
+    const scored = scoreAccount(a);
+    return { ...a, score: scored.total, parts: scored.parts, tier: tierFor(scored.total), reason: reasonFor(a, scored) };
+  }).sort((x, y) => y.score - x.score || x.name.localeCompare(y.name));
+}
+
+// ---- Sample pipeline flow (illustrative, six-week window) ----
+// Contact order follows score rank: the top 7 accounts start in week 1, the next 7 in week 2, and so on.
+// Replies and meetings are hand-placed sample events so the funnel has something to show. They are not results.
+const WEEKS = 6;
+const SAMPLE_EVENTS = {
+  a07: { replied: 2, sentiment: "positive", meeting: 3 },
+  a02: { replied: 2, sentiment: "positive", meeting: 3 },
+  a29: { replied: 3, sentiment: "positive", meeting: 4 },
+  a01: { replied: 3, sentiment: "negative" },
+  a23: { replied: 4, sentiment: "positive", meeting: 5 },
+  a16: { replied: 4, sentiment: "referral" },
+  a30: { replied: 5, sentiment: "positive", meeting: 6 },
+  a26: { replied: 6, sentiment: "negative" },
+};
+
+const STAGES = ["Prospect", "Contacted", "Replied", "Meeting booked"];
+
+function pipelineAt(week, accounts = enrichedAccounts()) {
+  return accounts.map((a, rank) => {
+    const contacted = 1 + Math.floor(rank / 7);
+    const ev = SAMPLE_EVENTS[a.id] || {};
+    let stage = 0;
+    if (week >= contacted) stage = 1;
+    if (ev.replied && week >= ev.replied) stage = 2;
+    if (ev.meeting && week >= ev.meeting) stage = 3;
+    return { ...a, contactedWeek: contacted, stage, sentiment: stage >= 2 ? ev.sentiment : null };
+  });
+}
+
+// Cumulative funnel: an account in "Replied" also counts as "Contacted", and so on.
+function funnelAt(week, accounts) {
+  const rows = pipelineAt(week, accounts);
+  return STAGES.map((label, i) => ({ label, count: rows.filter((r) => r.stage >= i).length }));
+}
+
+// ---- Outbound sequences (3 segments x 3 touches) ----
+const SEQUENCES = {
+  HIRE: {
+    title: "First hire abroad",
+    audience: "Heads of People, COOs and founders at 10–200 person UK/IE companies advertising their first role in a country where they have no entity.",
+    angle: "The offer date is a real deadline. Ask how they plan to employ the person before they have to decide in a hurry.",
+    touches: [
+      {
+        day: 1,
+        subject: "{{roleAbroad}} in {{countryAbroad}}",
+        body: `Hi {{first}},
+
+Saw {{company}} is hiring {{aRoleAbroad}} in {{countryAbroad}} ({{detail}}).
+
+The first hire in a new country is usually where the admin catches up with you: a local contract, payroll, mandatory benefits and holiday rules you haven't run before, and no entity to run them through.
+
+I speak to UK and Irish teams at exactly this point. Genuine question rather than a pitch: have you decided how you'll employ them yet? Entity, contractor agreement, or an employer of record?
+
+If it's still open, I'm happy to walk you through how other teams your size have handled it. 15 minutes, and you can tell me if it's useless.
+
+Ayo`,
+      },
+      {
+        day: 4,
+        subject: "Re: {{roleAbroad}} in {{countryAbroad}}",
+        body: `Hi {{first}},
+
+One useful thing, whatever you decide: before the offer goes out in {{countryAbroad}}, it's worth having four answers ready. What notice period and probation are standard there, which benefits are mandatory, when the payroll cut-off falls, and who signs the contract on your side.
+
+Candidates tend to ask about at least two of them in the final round.
+
+I've put those into a one-page checklist for {{countryAbroad}}. Want me to send it over? There's no call attached.
+
+Ayo`,
+      },
+      {
+        day: 9,
+        subject: "Close the loop?",
+        body: `Hi {{first}},
+
+I'll leave it here so I'm not cluttering your inbox.
+
+If the {{roleAbroad}} hire is already sorted, ignore me. If the timing's just wrong, reply "later" and I'll check back next quarter. If someone else owns this at {{company}}, a name is all I need.
+
+Good luck with the search either way.
+
+Ayo`,
+      },
+    ],
+  },
+  CONTRACT: {
+    title: "Contractor-heavy teams",
+    audience: "Finance and operations leads at UK/IE agencies, studios and software firms paying several overseas contractors through invoices and bank transfers.",
+    angle: "Month-end is the pain they feel. Lead with the payments admin and leave classification risk as a second, quieter point.",
+    touches: [
+      {
+        day: 1,
+        subject: "{{contractorCount}} contractors, {{contractorCountries}} countries",
+        body: `Hi {{first}},
+
+Noticed {{company}} works with a sizeable contractor team abroad ({{detail}}).
+
+Teams in that position usually tell me month-end is the painful bit: chasing invoices in different formats, paying transfer and FX fees on every one, and somebody in finance doing it all by hand.
+
+How do you run contractor payments today? One batch, or one transfer at a time?
+
+If it's the second, I can show you how similar teams get it down to a single monthly run. 15 minutes, no deck.
+
+Ayo`,
+      },
+      {
+        day: 4,
+        subject: "Re: {{contractorCount}} contractors, {{contractorCountries}} countries",
+        body: `Hi {{first}},
+
+There's a second point I didn't want to lead with. When a contractor has worked for you full time for a year or two, on your tools and to your schedule, some countries can start to treat that relationship as employment.
+
+It isn't a reason to panic. It is worth knowing which of your {{contractorCount}} contractors look most like employees on paper.
+
+I can send a short self-check (five questions per contractor) that most finance teams finish in about 20 minutes. Interested?
+
+Ayo`,
+      },
+      {
+        day: 9,
+        subject: "Last one from me",
+        body: `Hi {{first}},
+
+Last note from me on this.
+
+If contractor payments at {{company}} already run smoothly, then I've got it wrong and I'll leave you be. If they're on the list for next quarter, reply "later" and I'll come back then.
+
+If someone else owns it, point me their way and I'll keep it short.
+
+Ayo`,
+      },
+    ],
+  },
+  EXPAND: {
+    title: "New market entry",
+    audience: "COOs, CFOs and people leads at UK/IE companies that have publicly announced a new country launch, office or partner.",
+    angle: "They need people on the ground before an entity exists. Ask about sequencing, not software.",
+    touches: [
+      {
+        day: 1,
+        subject: "{{company}} in {{market}}",
+        body: `Hi {{first}},
+
+Congrats on the {{market}} news ({{detail}}).
+
+Teams expanding from the UK and Ireland usually hit the same sequencing question early: do you set up a local entity first, or get the first people working in {{marketCity}} while you find out whether the market sticks?
+
+How are you planning to approach it?
+
+I talk to teams at this stage most weeks, so I can tell you what I've seen work. 15 minutes, whenever suits.
+
+Ayo`,
+      },
+      {
+        day: 4,
+        subject: "Re: {{company}} in {{market}}",
+        body: `Hi {{first}},
+
+Something worth adding to the plan: setting up an entity in a new country can take months, and a first hire's start date often comes around sooner than that.
+
+Teams that test a market first tend to employ their first two or three people through an employer of record, then move them onto their own payroll once the entity exists. It keeps the launch date in your hands.
+
+Happy to sketch what that could look like for {{market}}, with rough timelines and the decision points. Useful?
+
+Ayo`,
+      },
+      {
+        day: 9,
+        subject: "Leaving this here",
+        body: `Hi {{first}},
+
+I'll stop here. If the {{market}} plan is already covered, great, and good luck with the launch.
+
+If it's further out than I assumed, reply "later" and I'll check in when you're closer to hiring. And if someone else is leading the expansion, I'd be grateful for a name.
+
+Ayo`,
+      },
+    ],
+  },
+};
+
+function fillTemplate(text, a) {
+  const vars = {
+    first: a.contact.first,
+    company: a.name,
+    detail: a.detail,
+    roleAbroad: a.roleAbroad,
+    aRoleAbroad: a.roleAbroad && withArticle(a.roleAbroad),
+    countryAbroad: a.countryAbroad,
+    contractorCount: a.contractorCount,
+    contractorCountries: a.contractorCountries,
+    market: a.market,
+    marketCity: a.marketCity,
+  };
+  return text.replace(/\{\{(\w+)\}\}/g, (m, k) => (vars[k] == null ? m : String(vars[k])));
+}
+
+// ---- Weekly operating rhythm (targets I set for myself; not results) ----
+const RHYTHM = [
+  { day: "Mon", focus: "Build & score", blocks: [["08:30", "Pull new trigger signals: job ads abroad, expansion news, contractor footprints"], ["10:00", "Score and tier new accounts; drop anything under 60"], ["13:30", "Research the week's tier-A accounts: one personal line each"], ["16:00", "Load sequences, check merge fields by hand"]] },
+  { day: "Tue", focus: "First touches", blocks: [["08:30", "Send day-1 emails to tier A (morning send window)"], ["10:00", "Call block 1: tier-A accounts that opened or replied"], ["14:00", "LinkedIn: connect and comment where the signal came from"], ["16:30", "Reply inside the hour; log every reply reason"]] },
+  { day: "Wed", focus: "Follow-ups", blocks: [["08:30", "Day-4 touches go out"], ["10:00", "Call block 2"], ["13:30", "Tier-B research and first touches"], ["16:00", "Hand booked meetings to the AE with a written brief"]] },
+  { day: "Thu", focus: "Calls & conversations", blocks: [["08:30", "Call block 3: best connect window for UK/IE SMB"], ["11:00", "Referral asks from 'not me' replies"], ["14:00", "Day-9 close-the-loop emails"], ["16:00", "Update CRM stages; no stale records"]] },
+  { day: "Fri", focus: "Review & tune", blocks: [["09:00", "Funnel review: where did accounts stall this week?"], ["10:30", "Read every reply again, tag the objection, rewrite one line"], ["13:30", "Pipeline sync with the AE and manager"], ["15:00", "Pick next week's segment focus and swap the weakest subject line"]] },
+];
+
+const WEEKLY_INPUTS = [
+  { label: "New accounts researched & scored", target: "40" },
+  { label: "Tier-A personalised first touches", target: "20" },
+  { label: "Call blocks", target: "3 × 60 min" },
+  { label: "Reply turnaround", target: "< 1 working hour" },
+  { label: "Meetings handed to AE with written brief", target: "Every one" },
+];
+
+// UI layer. Runs after model.js in the same bundle (see scripts/build.mjs).
+// Pure DOM, no frameworks, no network calls, no randomness: same input, same page.
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ALL = enrichedAccounts();
+const byId = Object.fromEntries(ALL.map((a) => [a.id, a]));
+const COUNTRY = { UK: "UK", IE: "Ireland" };
+
+const state = {
+  seg: "ALL",
+  tier: "ALL",
+  q: "",
+  sort: "score",
+  seqSeg: "HIRE",
+  seqAccount: null,
+  seqMode: "filled",
+  week: 6,
+  playing: null,
+  prevStages: null,
+};
+
+/* ---------- Tooltip ---------- */
+const tip = $("#tooltip");
+function showTip(e, html) {
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+}
+function hideTip() { tip.hidden = true; }
+document.addEventListener("mousemove", (e) => {
+  const t = e.target.closest("[data-tip]");
+  if (t) showTip(e, t.getAttribute("data-tip"));
+  else if (!tip.hidden) hideTip();
+});
+
+/* ---------- Routing ---------- */
+const TABS = ["prospects", "sequences", "pipeline", "rhythm"];
+function route() {
+  const [tab, param] = (location.hash.slice(1) || "prospects").split("/");
+  const active = TABS.includes(tab) ? tab : "prospects";
+  document.body.dataset.tab = active;
+  document.querySelectorAll(".view").forEach((v) => (v.hidden = v.dataset.view !== active));
+  document.querySelectorAll(".tabs a").forEach((a) => {
+    if (a.dataset.tab === active) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+  if (active === "sequences" && param && byId[param]) {
+    state.seqSeg = byId[param].segment;
+    state.seqAccount = param;
+  }
+  if (active !== "pipeline") stopPlay();
+  render[active]();
+  closeDrawer();
+}
+window.addEventListener("hashchange", () => { route(); window.scrollTo({ top: 0 }); });
+
+/* ---------- Prospects ---------- */
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  let rows = ALL.filter((a) =>
+    (state.seg === "ALL" || a.segment === state.seg) &&
+    (state.tier === "ALL" || a.tier === state.tier) &&
+    (!q || [a.name, a.city, a.sector, a.signal, a.contact.role].join(" ").toLowerCase().includes(q))
+  );
+  if (state.sort === "name") rows = [...rows].sort((x, y) => x.name.localeCompare(y.name));
+  if (state.sort === "staff") rows = [...rows].sort((x, y) => y.staff - x.staff || x.name.localeCompare(y.name));
+  if (state.sort === "fresh") rows = [...rows].sort((x, y) => x.signalAgeDays - y.signalAgeDays || x.name.localeCompare(y.name));
+  return rows;
+}
+
+function renderProspects() {
+  const el = $("#view-prospects");
+  const counts = { ALL: ALL.length };
+  for (const k of Object.keys(SEGMENTS)) counts[k] = ALL.filter((a) => a.segment === k).length;
+  el.innerHTML = `
+    <div class="section-head">
+      <div>
+        <h2 id="h-prospects">Named-account prospect board</h2>
+        <p>40 UK and Irish companies with 10–200 staff, each showing a public trigger that says they're about to employ, pay or expand across borders. Scored 0–100 on fit and timing, with the reason in plain English.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="chips" role="group" aria-label="Filter by trigger segment">
+        <button class="chip" data-seg="ALL" aria-pressed="${state.seg === "ALL"}">All <span class="count">${counts.ALL}</span></button>
+        ${Object.values(SEGMENTS).map((s) => `<button class="chip seg-${s.key}" data-seg="${s.key}" aria-pressed="${state.seg === s.key}"><i class="dot"></i>${s.label} <span class="count">${counts[s.key]}</span></button>`).join("")}
+      </div>
+      <div class="right">
+        <select class="field" id="tier" aria-label="Filter by tier">
+          ${["ALL", "A", "B", "C"].map((t) => `<option value="${t}" ${state.tier === t ? "selected" : ""}>${t === "ALL" ? "All tiers" : `Tier ${t}`}</option>`).join("")}
+        </select>
+        <select class="field" id="sort" aria-label="Sort">
+          <option value="score" ${state.sort === "score" ? "selected" : ""}>Sort: fit score</option>
+          <option value="fresh" ${state.sort === "fresh" ? "selected" : ""}>Sort: freshest signal</option>
+          <option value="staff" ${state.sort === "staff" ? "selected" : ""}>Sort: headcount</option>
+          <option value="name" ${state.sort === "name" ? "selected" : ""}>Sort: A–Z</option>
+        </select>
+        <input class="field" id="q" type="search" placeholder="Search company, city, sector" value="${esc(state.q)}" aria-label="Search accounts">
+      </div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="board"><table>
+      <thead><tr><th>Company</th><th>Trigger signal</th><th>Segment</th><th>Fit score</th><th class="col-reason">Why this account, why now</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p class="method">How the score works: headcount fit (20) + signal freshness (25) + cross-border footprint (30) + funding timing (15) + entity gap (10). Tier A is 75+, B is 60–74, C is under 60. Click any row for the breakdown.</p>`;
+
+  el.querySelectorAll("[data-seg]").forEach((b) => b.addEventListener("click", () => { state.seg = b.dataset.seg; renderProspects(); }));
+  $("#tier").addEventListener("change", (e) => { state.tier = e.target.value; fillRows(); });
+  $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; fillRows(); });
+  $("#q").addEventListener("input", (e) => { state.q = e.target.value; fillRows(); });
+  fillRows();
+}
+
+function fillRows() {
+  const rows = filtered();
+  const tierA = rows.filter((a) => a.tier === "A").length;
+  const avg = rows.length ? Math.round(rows.reduce((s, a) => s + a.score, 0) / rows.length) : 0;
+  const fresh = rows.filter((a) => a.signalAgeDays <= 14).length;
+  $("#tiles").innerHTML = `
+    <div class="tile"><div class="k">Accounts in view</div><div class="v">${rows.length}</div><div class="s">of ${ALL.length} on the board</div></div>
+    <div class="tile"><div class="k">Tier A (75+)</div><div class="v">${tierA}</div><div class="s">work these first</div></div>
+    <div class="tile"><div class="k">Average fit score</div><div class="v">${avg}</div><div class="s">out of 100</div></div>
+    <div class="tile"><div class="k">Signal under 14 days old</div><div class="v">${fresh}</div><div class="s">act this week</div></div>`;
+  $("#rows").innerHTML = rows.length ? rows.map((a) => `
+    <tr data-id="${a.id}" tabindex="0" aria-label="${esc(a.name)}, score ${a.score}">
+      <td><div class="co-name">${esc(a.name)}</div><div class="co-meta">${esc(a.city)}, ${COUNTRY[a.country]} · ${a.staff} staff</div><div class="co-meta">${esc(a.sector)}</div></td>
+      <td class="signal">${esc(a.signal)}<div class="co-meta">${a.signalAgeDays} days ago</div></td>
+      <td><span class="seg-tag seg-${a.segment}"><i class="dot"></i>${SEGMENTS[a.segment].short}</span></td>
+      <td><div class="score"><span class="score-num">${a.score}</span><span class="bar" aria-hidden="true"><i style="width:${a.score}%"></i></span></div><span class="tier tier-${a.tier}">Tier ${a.tier}</span></td>
+      <td class="reason col-reason">${esc(a.reason)}</td>
+    </tr>`).join("") : `<tr><td colspan="5" class="empty">No accounts match those filters.</td></tr>`;
+  document.querySelectorAll("#rows tr[data-id]").forEach((tr) => {
+    tr.addEventListener("click", () => openDrawer(tr.dataset.id));
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDrawer(tr.dataset.id); } });
+  });
+}
+
+/* ---------- Drawer ---------- */
+const PART_LABEL = { headcount: "Headcount fit", recency: "Signal freshness", footprint: "Cross-border footprint", timing: "Funding timing", entity: "Entity gap" };
+let lastFocus = null;
+function openDrawer(id) {
+  const a = byId[id];
+  lastFocus = document.activeElement;
+  const d = $("#drawer");
+  d.innerHTML = `
+    <button class="btn secondary small close" id="drawer-close" aria-label="Close">Close</button>
+    <span class="seg-tag seg-${a.segment}"><i class="dot"></i>${SEGMENTS[a.segment].label}</span>
+    <h3 id="drawer-title">${esc(a.name)}</h3>
+    <div class="co-meta">${esc(a.sector)} · ${esc(a.city)}, ${COUNTRY[a.country]}</div>
+    <dl class="kv">
+      <dt>Staff</dt><dd>${a.staff}</dd>
+      <dt>Signal</dt><dd>${esc(a.signal)} (${esc(a.detail)})</dd>
+      <dt>Countries</dt><dd>${a.abroadCountries.map(esc).join(", ")}</dd>
+      <dt>First contact</dt><dd>${esc(a.contact.first)}, ${esc(a.contact.role)}</dd>
+      <dt>Deel wedge</dt><dd>${esc(SEGMENTS[a.segment].wedge)}</dd>
+    </dl>
+    <div class="score"><span class="score-num">${a.score}</span><span class="bar"><i style="width:${a.score}%"></i></span><span class="tier tier-${a.tier}">Tier ${a.tier}</span></div>
+    <div class="parts">
+      ${Object.entries(a.parts).map(([k, v]) => `<div class="part"><span>${PART_LABEL[k]}</span><span class="bar"><i style="width:${(v / SCORE_WEIGHTS[k]) * 100}%"></i></span><span class="val">${v} / ${SCORE_WEIGHTS[k]}</span></div>`).join("")}
+    </div>
+    <div class="callout">${esc(a.reason)}</div>
+    <p style="margin-top:18px"><a class="btn" href="#sequences/${a.id}" id="drawer-seq">Open the ${esc(SEQUENCES[a.segment].title.toLowerCase())} sequence for ${esc(a.contact.first)}</a></p>`;
+  d.hidden = false;
+  $("#drawer-backdrop").hidden = false;
+  $("#drawer-close").addEventListener("click", closeDrawer);
+  $("#drawer-close").focus();
+}
+function closeDrawer() {
+  if ($("#drawer").hidden) return;
+  $("#drawer").hidden = true;
+  $("#drawer-backdrop").hidden = true;
+  if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
+}
+$("#drawer-backdrop").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+/* ---------- Sequences ---------- */
+function highlight(template, a, mode) {
+  const parts = template.split(/(\{\{\w+\}\})/g);
+  return parts.map((p) => {
+    const m = p.match(/^\{\{(\w+)\}\}$/);
+    if (!m) return esc(p);
+    if (mode === "template" || !a) return `<mark class="var">${esc(p)}</mark>`;
+    return `<mark class="fill">${esc(fillTemplate(p, a))}</mark>`;
+  }).join("");
+}
+const words = (t) => t.trim().split(/\s+/).length;
+
+function renderSequences() {
+  const el = $("#view-sequences");
+  const seq = SEQUENCES[state.seqSeg];
+  const seg = SEGMENTS[state.seqSeg];
+  const options = ALL.filter((a) => a.segment === state.seqSeg);
+  if (!state.seqAccount || byId[state.seqAccount].segment !== state.seqSeg) state.seqAccount = options[0].id;
+  const a = byId[state.seqAccount];
+  el.innerHTML = `
+    <div class="section-head">
+      <div>
+        <h2 id="h-sequences">Three outbound sequences</h2>
+        <p>One per trigger segment, three emails each, written in my voice. Each one opens with the prospect's own signal, asks a question they can answer in one line, and offers something useful before it asks for time.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="chips" role="group" aria-label="Choose a sequence">
+        ${Object.values(SEGMENTS).map((s) => `<button class="chip seg-${s.key}" data-seqseg="${s.key}" aria-pressed="${state.seqSeg === s.key}"><i class="dot"></i>${esc(SEQUENCES[s.key].title)}</button>`).join("")}
+      </div>
+      <div class="toggle" role="group" aria-label="View mode">
+        <button data-mode="filled" aria-pressed="${state.seqMode === "filled"}">Personalised</button>
+        <button data-mode="template" aria-pressed="${state.seqMode === "template"}">Template</button>
+      </div>
+    </div>
+    <div class="seq-layout">
+      <div class="seq-side panel">
+        <span class="seg-tag seg-${seg.key}"><i class="dot"></i>${seg.label}</span>
+        <h3 style="margin-top:10px">${esc(seq.title)}</h3>
+        <h4>Who it's for</h4><p>${esc(seq.audience)}</p>
+        <h4>The angle</h4><p>${esc(seq.angle)}</p>
+        <h4>Why this segment</h4><p>${esc(seg.why)}</p>
+        <h4>Where Deel fits</h4><p>${esc(seg.wedge)}</p>
+        <h4><label for="acct">Preview for account</label></h4>
+        <select class="field picker" id="acct">${options.map((o) => `<option value="${o.id}" ${o.id === a.id ? "selected" : ""}>${esc(o.name)} (${o.score})</option>`).join("")}</select>
+      </div>
+      <div class="touches">
+        ${seq.touches.map((t, i) => `
+          <article class="touch">
+            <div class="touch-head">
+              <div class="touch-day"><span class="daybadge">Day ${t.day}</span>Touch ${i + 1} of 3 · email</div>
+              <span class="wordcount">${words(fillTemplate(t.body, a))} words</span>
+            </div>
+            <div class="touch-subject"><span>Subject:</span> ${highlight(t.subject, a, state.seqMode)}</div>
+            <div class="touch-body">${highlight(t.body, a, state.seqMode)}</div>
+          </article>`).join("")}
+        <p class="method">Highlighted text is pulled from the account record, so every send can be checked against the board. Sent from my own inbox, Tuesday to Thursday mornings, never with tracking pixels on the first touch.</p>
+      </div>
+    </div>`;
+  el.querySelectorAll("[data-seqseg]").forEach((b) => b.addEventListener("click", () => { state.seqSeg = b.dataset.seqseg; state.seqAccount = null; renderSequences(); }));
+  el.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => { state.seqMode = b.dataset.mode; renderSequences(); }));
+  $("#acct").addEventListener("change", (e) => { state.seqAccount = e.target.value; renderSequences(); });
+}
+
+/* ---------- Pipeline ---------- */
+function renderPipeline() {
+  const el = $("#view-pipeline");
+  el.innerHTML = `
+    <div class="section-head">
+      <div>
+        <h2 id="h-pipeline">Pipeline view</h2>
+        <p>How the 40 accounts would move through prospect, contacted, replied and meeting booked over a six-week sample run. Top-scored accounts are contacted first, seven a week. Press play to watch it fill. The flow is illustrative, not a forecast.</p>
+      </div>
+    </div>
+    <div class="pipe-controls">
+      <button class="btn" id="play">${state.playing ? "Pause" : "Play weeks 1–6"}</button>
+      <div class="weeks" role="group" aria-label="Choose week">${Array.from({ length: WEEKS }, (_, i) => `<button data-week="${i + 1}" aria-pressed="${state.week === i + 1}">W${i + 1}</button>`).join("")}</div>
+      <div class="legend">${Object.values(SEGMENTS).map((s) => `<span class="seg-${s.key}"><i class="dot"></i>${s.label}</span>`).join("")}</div>
+    </div>
+    <div class="funnel-wrap">
+      <div class="panel"><h3 style="font-size:18px">Funnel at end of week <span id="wk">${state.week}</span><span class="sample-tag">Sample</span></h3><div class="funnel" id="funnel"></div><p class="axis-note">Cumulative: an account that replied also counts as contacted. Bars share one scale (40 accounts).</p></div>
+      <div class="panel"><h3 style="font-size:18px">Stage-to-stage conversion</h3><div class="rates" id="rates"></div></div>
+    </div>
+    <div class="kanban" id="kanban"></div>`;
+  $("#play").addEventListener("click", togglePlay);
+  el.querySelectorAll("[data-week]").forEach((b) => b.addEventListener("click", () => { stopPlay(); setWeek(+b.dataset.week); }));
+  state.prevStages = null;
+  fillPipeline();
+}
+
+function setWeek(w) {
+  state.week = w;
+  document.querySelectorAll("[data-week]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.week === w)));
+  fillPipeline();
+}
+
+function fillPipeline() {
+  const rows = pipelineAt(state.week, ALL);
+  const funnel = funnelAt(state.week, ALL);
+  $("#wk").textContent = state.week;
+  $("#funnel").innerHTML = funnel.map((f, i) => {
+    const prev = i > 0 ? funnel[i - 1].count : null;
+    const conv = prev ? Math.round((f.count / prev) * 100) : null;
+    return `<div class="f-row">
+      <span class="f-label">${f.label}</span>
+      <span class="f-track"><span class="f-bar" style="width:${(f.count / ALL.length) * 100}%"></span><span class="hit" data-tip="<b>${f.label}</b><br>${f.count} of ${ALL.length} accounts${conv != null ? `<br>${conv}% of previous stage` : ""}"></span></span>
+      <span class="f-count">${f.count}</span>
+    </div>`;
+  }).join("");
+  const pct = (a, b) => (b ? `${Math.round((a / b) * 100)}%` : "–");
+  const [p, c, r, m] = funnel.map((f) => f.count);
+  const pos = rows.filter((x) => x.stage >= 2 && x.sentiment !== "negative").length;
+  $("#rates").innerHTML = `
+    <div class="rate"><span>Prospect → contacted</span><b>${pct(c, p)}</b></div>
+    <div class="rate"><span>Contacted → replied</span><b>${pct(r, c)}</b></div>
+    <div class="rate"><span>Replied → meeting</span><b>${pct(m, r)}</b></div>
+    <div class="rate"><span>Positive or referral replies</span><b>${pos} of ${r}</b></div>
+    <div class="rate"><span>Contacted → meeting</span><b>${pct(m, c)}</b></div>`;
+  const prev = state.prevStages;
+  const cols = STAGES.map((label, i) => {
+    const list = rows.filter((x) => x.stage === i);
+    const show = list.slice(0, 12);
+    return `<div class="col"><h4>${label}<span>${list.length}</span></h4>
+      ${show.map((x) => `<div class="card seg-${x.segment} ${prev && prev[x.id] !== x.stage ? "moved" : ""}"><i class="dot"></i><span>${esc(x.name)}<span class="sub">${x.stage >= 2 ? sentimentLabel(x.sentiment) : `Score ${x.score} · ${x.stage === 1 ? `contacted W${x.contactedWeek}` : `queued for W${x.contactedWeek}`}`}</span></span></div>`).join("")}
+      ${list.length > show.length ? `<div class="more">+ ${list.length - show.length} more</div>` : ""}
+    </div>`;
+  });
+  $("#kanban").innerHTML = cols.join("");
+  state.prevStages = Object.fromEntries(rows.map((x) => [x.id, x.stage]));
+}
+function sentimentLabel(s) {
+  return { positive: "Positive reply", negative: "Not now", referral: "Referred to colleague" }[s] || "";
+}
+function togglePlay() {
+  if (state.playing) return stopPlay();
+  setWeek(1);
+  $("#play").textContent = "Pause";
+  state.playing = setInterval(() => {
+    if (state.week >= WEEKS) return stopPlay();
+    setWeek(state.week + 1);
+  }, 1100);
+}
+function stopPlay() {
+  if (state.playing) clearInterval(state.playing);
+  state.playing = null;
+  const b = $("#play");
+  if (b) b.textContent = "Play weeks 1–6";
+}
+
+/* ---------- Rhythm ---------- */
+function renderRhythm() {
+  const el = $("#view-rhythm");
+  el.innerHTML = `
+    <div class="section-head">
+      <div>
+        <h2 id="h-rhythm">How this runs weekly</h2>
+        <p>The engine only works if it runs the same way every week. Monday builds the list, Tuesday to Thursday is for conversations, and Friday is for learning what to change.</p>
+      </div>
+    </div>
+    <div class="week-grid">
+      ${RHYTHM.map((d) => `<div class="day"><div class="day-head"><b>${d.day}</b><span>${esc(d.focus)}</span></div>${d.blocks.map(([t, txt]) => `<div class="block"><time>${t}</time>${esc(txt)}</div>`).join("")}</div>`).join("")}
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <h3>Inputs I hold myself to</h3>
+        <p style="margin-bottom:8px">Weekly targets for what I control. Outputs like replies and meetings are what Friday's review is for.</p>
+        <ul class="inputs">${WEEKLY_INPUTS.map((i) => `<li><span>${esc(i.label)}</span><b>${esc(i.target)}</b></li>`).join("")}</ul>
+      </div>
+      <div class="panel">
+        <h3>Rules of the engine</h3>
+        <ol class="rules">
+          <li>No signal, no sequence. Every account needs a dated, public trigger.</li>
+          <li>Tier A gets a hand-written first line. Tier C waits until a fresh signal appears.</li>
+          <li>One question per email, answerable in a line.</li>
+          <li>Every reply gets tagged: interested, not now, wrong person, or objection.</li>
+          <li>Drop or rewrite a subject line once it has had a fair run and is still the weakest.</li>
+          <li>"Later" means a dated follow-up task, not a vague nurture list.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>AE handoff brief (sent with every booked meeting)</h3>
+      <div class="brief">Account: Halyard Security (Belfast, 96 staff) · Score 82, tier A
+Trigger: two SOC Analyst roles in Romania, posted 11 days ago
+Contact: Declan, VP Operations
+What they said: hiring both by end of quarter; no Romanian entity; worried about overnight-shift rules
+Likely fit: EOR for 2 hires, contractor review for 1 existing freelancer
+Open questions: who signs off budget; whether the UK payroll provider is up for renewal
+Meeting: 30 min, Thursday 10:00, Declan + Head of Finance</div>
+      <p class="method" style="margin-top:8px">The brief above uses a sample account from the board.</p>
+    </div>`;
+}
+
+const render = { prospects: renderProspects, sequences: renderSequences, pipeline: renderPipeline, rhythm: renderRhythm };
+route();
+
+})();</script>
+</body>
+</html>
